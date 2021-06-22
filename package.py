@@ -2,7 +2,7 @@
 
 name = 'oidn'
 
-version = '1.4.0-ta.1.0.0'
+version = '1.4.1-ta.1.0.0'
 
 authors = [
     'alex.fuller',
