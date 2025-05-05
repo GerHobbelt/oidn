@@ -5,6 +5,8 @@ Version History
 
 -   Added NVIDIA Blackwell GPU support
 -   Added AMD RDNA4 GPU support
+-   Improved performance for AMD RDNA3 GPUs
+-   Known issue: performance regression for AMD RDNA2 GPUs
 
 ### Changes in v2.3.2:
 

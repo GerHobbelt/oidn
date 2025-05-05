@@ -36,6 +36,7 @@ set(OIDN_HIP_SOURCES
   ck_conv_dl.cpp
   ck_conv_wmma.cpp
   hip_conv.h
+  hip_conv.cpp
   hip_device.h
   hip_device.cpp
   hip_engine.h
@@ -62,6 +63,14 @@ target_include_directories(OpenImageDenoise_device_hip
   PRIVATE
     "${OIDN_ROOT_SOURCE_DIR}/external/composable_kernel/include"
     "${OIDN_ROOT_SOURCE_DIR}/external/composable_kernel/library/include"
+)
+
+target_compile_definitions(OpenImageDenoise_device_hip PRIVATE
+  CK_ENABLE_INT8
+  CK_ENABLE_FP16
+  DL_KERNELS
+  CK_USE_WMMA
+  CK_USE_OCP_FP8
 )
 
 set_source_files_properties(
