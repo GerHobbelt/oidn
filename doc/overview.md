@@ -6,7 +6,10 @@ high-quality denoising filters for images rendered with ray tracing.
 Intel Open Image Denoise is part of the
 [Intel® Rendering Toolkit](https://software.intel.com/en-us/oneapi/render-kit)
 and is released under the permissive
-[Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).
+[Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). It has been
+recognized with a [Technical Achievement Award](https://press.oscars.org/news/14-achievements-be-honored-scientific-and-technical-awardsr)
+by the Academy of Motion Picture Arts and Sciences in 2025 for its contribution
+to the motion picture industry.
 
 The purpose of Intel Open Image Denoise is to provide an open, high-quality,
 efficient, and easy-to-use denoising library that allows one to significantly
@@ -48,10 +51,11 @@ vendors:
     (Xe-LP, Xe-LPG, Xe-LPG+, Xe-HPG, Xe-HPC, Xe2-LPG, Xe2-HPG, and Xe3-LPG
     microarchitectures)
 
--   NVIDIA GPUs with Volta, Turing, Ampere, Ada Lovelace, and Hopper
-    architectures
+-   NVIDIA GPUs with Volta, Turing, Ampere, Ada Lovelace, Hopper, and
+    Blackwell architectures
 
--   AMD GPUs with RDNA2 (Navi 21 only) and RDNA3 (Navi 3x) architectures
+-   AMD GPUs with RDNA2 (Navi 21 only), RDNA3 (Navi 3x), and RDNA4 (Navi 4x)
+    architectures
 
 -   Apple silicon GPUs (M1 and newer)
 
@@ -99,10 +103,10 @@ For NVIDIA GPU support, please also install the latest
 For AMD GPU support, please also install the latest
 [AMD graphics drivers](https://www.amd.com/en/support):
 
--   Windows: AMD Software: Adrenalin Edition 24.10.1 or newer
+-   Windows: AMD Software: Adrenalin Edition 25.3.1 or newer
 
 -   Linux: [Radeon Software for Linux](https://www.amd.com/en/support/linux-drivers)
-    version 24.20.3 or newer
+    version 24.30.4 or newer
 
 For Apple GPU support, macOS Ventura or newer is required.
 
