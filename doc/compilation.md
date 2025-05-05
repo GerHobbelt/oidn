@@ -49,15 +49,12 @@ prerequisites are needed:
 
 #### SYCL device for Intel GPUs: {-}
 
--   oneAPI DPC++ Compiler, one of the following versions (other versions are
-    *not* supported):
-    -   [oneAPI DPC++ Compiler 2023-10-26](https://github.com/intel/llvm/releases/tag/nightly-2023-10-26).
-        This is the open source version of the compiler, which is more
-        up-to-date but less stable, so we *strongly* recommend to use this exact
-        version. On Linux we also recommend to rebuild it from source with the
-        `--disable-fusion` flag to minimize the size of the SYCL runtime.
-    -   [oneAPI DPC++ Compiler 2022-12](https://github.com/intel/llvm/releases/tag/2022-12).
-        *Must* be rebuilt from source.
+-   oneAPI DPC++ Compiler, one of the following versions (other versions might
+    work as well but have *not* been validated with Intel Open Image Denoise):
+    -   [oneAPI DPC++ Compiler 6.0.1](https://github.com/intel/llvm/releases/tag/v6.0.1).
+        This is the open source version of the compiler, which needs to be built
+        from source. We recommend building it with the `--disable-jit` flag to
+        minimize the size of the SYCL runtime binaries.
     -   [Intel® oneAPI DPC++/C++ Compiler](https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html)
         2024.1 or newer
 
@@ -243,6 +240,9 @@ The following list describes the options that can be configured in CMake:
 
 - `OIDN_LIBRARY_NAME`: Specifies the base name of the Open Image Denoise
   library files (`OpenImageDenoise` by default).
+
+- `OIDN_LIBRARY_VERSIONED`: Enable versioning of the Open Image Denoise library
+  files, where available (ON by default).
 
 - `OIDN_API_NAMESPACE`: Specifies a namespace to put all Open Image Denoise API
   symbols inside. This is also added as an outer namespace for the C++ wrapper
