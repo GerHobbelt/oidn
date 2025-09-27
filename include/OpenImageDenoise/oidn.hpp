@@ -984,7 +984,7 @@ OIDN_NAMESPACE_BEGIN
       return id >= 0;
     }
 
-    // Gets a paramter of the physical device.
+    // Gets a parameter of the physical device.
     template<typename T>
     T get(const char* name) const;
 
