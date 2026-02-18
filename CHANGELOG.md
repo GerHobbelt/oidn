@@ -1,6 +1,10 @@
 Version History
 ---------------
 
+### Changes in v2.4.1:
+
+-   Added AMD RDNA 3.5 GFX1152 GPU support
+
 ### Changes in v2.4.0:
 
 -   Added Intel AMX-FP16 support, dramatically improving performance on Intel

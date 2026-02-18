@@ -50,9 +50,10 @@ jobs:
     with:
       project: oidn
       runs-on: '[ "macOS", "sign", "x86_64", "vis-mac-pro-1" ]'
-      cmd: scripts/build.py package --full
+      cmd: scripts/build.py package --full --sign
       artifact-out: package-macos
       artifact-path: build/oidn-*.tar.gz
+      notarize-package: build/oidn-*.zip
 
   package-macos-arm:
     secrets: inherit
@@ -60,9 +61,10 @@ jobs:
     with:
       project: oidn
       runs-on: '[ "macOS", "ARM64", "vis-mac-studio-1" ]'
-      cmd: scripts/build.py package --full
+      cmd: scripts/build.py package --full --sign
       artifact-out: package-macos-arm
       artifact-path: build/oidn-*.tar.gz
+      notarize-package: build/oidn-*.zip
 
   package-windows:
     secrets: inherit
@@ -78,7 +80,7 @@ jobs:
         where ocloc.exe
         where $env:CC
         where $env:CXX
-        python scripts/build.py package --full
+        python scripts/build.py package --full --sign
       artifact-out: package-windows
       artifact-path: build/oidn-*.zip
 
@@ -300,27 +302,16 @@ jobs:
       artifact-out: build-rockylinux8-gta-jit
       artifact-path: oidn-gta-jit-lin
 
-  build-rockylinux8-oldsyclos:
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
-    with:
-      project: oidn
-      image: oidn/rockylinux:8
-      dpcpp-version: intel-llvm/v6.0.1-rk
-      cmd: scripts/build.py install --full -D OIDN_DEVICE_SYCL_AOT=OFF
-      artifact-out: build-rockylinux8-oldsyclos
-      artifact-path: build install deps
-
-  build-rockylinux8-syclos:
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
-    with:
-      project: oidn
-      image: oidn/rockylinux:8
-      dpcpp-version: intel-llvm/sycl-rel_5_2_0-rk
-      cmd: scripts/build.py install --full -D OIDN_DEVICE_SYCL_AOT=OFF
-      artifact-out: build-rockylinux8-syclos
-      artifact-path: build install deps
+  # build-rockylinux8-oldsyclos:
+  #   secrets: inherit
+  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
+  #   with:
+  #     project: oidn
+  #     image: oidn/rockylinux:8
+  #     dpcpp-version: intel-llvm/v6.0.1-rk
+  #     cmd: scripts/build.py install --full -D OIDN_DEVICE_SYCL_AOT=OFF
+  #     artifact-out: build-rockylinux8-oldsyclos
+  #     artifact-path: build install deps
 
   build-ubuntu2404-gcc:
     secrets: inherit
@@ -657,63 +648,63 @@ jobs:
       artifact-on-failure: true
       cmd: scripts/test.py --device sycl --log test.log
 
-  test-rockylinux8-oldsyclos-avx2:
-    needs: build-rockylinux8-oldsyclos
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
-    with:
-      project: oidn
-      runs-on: '[ "Linux", "avx2" ]'
-      image: oidn/ubuntu:24.04
-      artifact-in: build-rockylinux8-oldsyclos
-      artifact-out: test-rockylinux8-oldsyclos-avx2
-      artifact-path: test.log
-      artifact-on-failure: true
-      cmd: scripts/test.py --device cpu --log test.log
+  # test-rockylinux8-oldsyclos-avx2:
+  #   needs: build-rockylinux8-oldsyclos
+  #   secrets: inherit
+  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
+  #   with:
+  #     project: oidn
+  #     runs-on: '[ "Linux", "avx2" ]'
+  #     image: oidn/ubuntu:24.04
+  #     artifact-in: build-rockylinux8-oldsyclos
+  #     artifact-out: test-rockylinux8-oldsyclos-avx2
+  #     artifact-path: test.log
+  #     artifact-on-failure: true
+  #     cmd: scripts/test.py --device cpu --log test.log
 
-  test-rockylinux8-oldsyclos-dg2:
-    needs: build-rockylinux8-oldsyclos
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
-    with:
-      project: oidn
-      runs-on: '[ "Linux", "dg2" ]'
-      image: oidn/ubuntu:24.04
-      options: --device=/dev/dri
-      artifact-in: build-rockylinux8-oldsyclos
-      artifact-out: test-rockylinux8-oldsyclos-dg2
-      artifact-path: test.log
-      artifact-on-failure: true
-      cmd: scripts/test.py --device sycl --log test.log
+  # test-rockylinux8-oldsyclos-dg2:
+  #   needs: build-rockylinux8-oldsyclos
+  #   secrets: inherit
+  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
+  #   with:
+  #     project: oidn
+  #     runs-on: '[ "Linux", "dg2" ]'
+  #     image: oidn/ubuntu:24.04
+  #     options: --device=/dev/dri
+  #     artifact-in: build-rockylinux8-oldsyclos
+  #     artifact-out: test-rockylinux8-oldsyclos-dg2
+  #     artifact-path: test.log
+  #     artifact-on-failure: true
+  #     cmd: scripts/test.py --device sycl --log test.log
 
-  test-rockylinux8-syclos-avx2:
-    needs: build-rockylinux8-syclos
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
-    with:
-      project: oidn
-      runs-on: '[ "Linux", "avx2" ]'
-      image: oidn/ubuntu:24.04
-      artifact-in: build-rockylinux8-syclos
-      artifact-out: test-rockylinux8-syclos-avx2
-      artifact-path: test.log
-      artifact-on-failure: true
-      cmd: scripts/test.py --device cpu --log test.log
+  # test-rockylinux8-oldsyclos-avx2:
+  #   needs: build-rockylinux8-oldsyclos
+  #   secrets: inherit
+  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
+  #   with:
+  #     project: oidn
+  #     runs-on: '[ "Linux", "avx2" ]'
+  #     image: oidn/ubuntu:24.04
+  #     artifact-in: build-rockylinux8-oldsyclos
+  #     artifact-out: test-rockylinux8-oldsyclos-avx2
+  #     artifact-path: test.log
+  #     artifact-on-failure: true
+  #     cmd: scripts/test.py --device cpu --log test.log
 
-  test-rockylinux8-syclos-dg2:
-    needs: build-rockylinux8-syclos
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
-    with:
-      project: oidn
-      runs-on: '[ "Linux", "dg2" ]'
-      image: oidn/ubuntu:24.04
-      options: --device=/dev/dri
-      artifact-in: build-rockylinux8-syclos
-      artifact-out: test-rockylinux8-syclos-dg2
-      artifact-path: test.log
-      artifact-on-failure: true
-      cmd: scripts/test.py --device sycl --log test.log
+  # test-rockylinux8-oldsyclos-dg2:
+  #   needs: build-rockylinux8-oldsyclos
+  #   secrets: inherit
+  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/docker.yml@main
+  #   with:
+  #     project: oidn
+  #     runs-on: '[ "Linux", "dg2" ]'
+  #     image: oidn/ubuntu:24.04
+  #     options: --device=/dev/dri
+  #     artifact-in: build-rockylinux8-oldsyclos
+  #     artifact-out: test-rockylinux8-oldsyclos-dg2
+  #     artifact-path: test.log
+  #     artifact-on-failure: true
+  #     cmd: scripts/test.py --device sycl --log test.log
 
   test-rockylinux8-debug-avx2:
     needs: build-rockylinux8-debug
@@ -1362,18 +1353,18 @@ jobs:
       artifact-path: build install
       cmd: python scripts/build.py install --full -D OIDN_DEVICE_CUDA_API=RuntimeStatic
 
-  build-windows-syclos:
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
-    with:
-      project: oidn
-      runs-on: '[ "Windows", "cuda", "hip" ]'
-      msvc-version: "2022"
-      dpcpp-version: intel-llvm/sycl-rel_5_2_0-rk
-      ocloc-version: oneAPI/ocloc/2025.3
-      artifact-out: build-windows-syclos
-      artifact-path: build install
-      cmd: python scripts/build.py install --full -D OIDN_DEVICE_SYCL_AOT=OFF
+  # build-windows-oldsyclos:
+  #   secrets: inherit
+  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
+  #   with:
+  #     project: oidn
+  #     runs-on: '[ "Windows", "cuda", "hip" ]'
+  #     msvc-version: "2022"
+  #     dpcpp-version: intel-llvm/v6.0.1-rk
+  #     ocloc-version: oneAPI/ocloc/2025.3
+  #     artifact-out: build-windows-oldsyclos
+  #     artifact-path: build install
+  #     cmd: python scripts/build.py install --full -D OIDN_DEVICE_SYCL_AOT=OFF
 
   build-windows-icx:
     secrets: inherit
@@ -1448,15 +1439,25 @@ jobs:
       artifact-path: build install
       cmd: python scripts/build.py install --compiler msvc17 -D OIDN_SANITIZER=Address
 
-  # build-windows-arm-msvc17:
-  #   secrets: inherit
-  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
-  #   with:
-  #     project: oidn
-  #     runs-on: '[ "Windows", "arm" ]'
-  #     artifact-out: build-windows-arm-msvc17
-  #     artifact-path: build install
-  #     cmd: python scripts/build.py install --compiler msvc17
+  build-windows-arm-msvc17:
+    secrets: inherit
+    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
+    with:
+      project: oidn
+      runs-on: '[ "Windows", "ARM64" ]'
+      artifact-out: build-windows-arm-msvc17
+      artifact-path: build install
+      cmd: python scripts/build.py install --compiler msvc17
+
+  build-windows-arm-msvc17-debug:
+    secrets: inherit
+    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
+    with:
+      project: oidn
+      runs-on: '[ "Windows", "ARM64" ]'
+      artifact-out: build-windows-arm-msvc17-debug
+      artifact-path: build install
+      cmd: python scripts/build.py install --compiler msvc17 --config Debug
 
   test-windows-avx2:
     needs: build-windows
@@ -1464,7 +1465,7 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "avx2", "NAS" ]'
+      runs-on: '[ "Windows", "avx2" ]'
       artifact-in: build-windows
       artifact-out: test-windows-avx2
       artifact-path: test.log
@@ -1477,7 +1478,7 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "avx512", "NAS" ]'
+      runs-on: '[ "Windows", "avx512" ]'
       artifact-in: build-windows
       artifact-out: test-windows-avx512
       artifact-path: test.log
@@ -1490,7 +1491,7 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "avx512", "NAS" ]'
+      runs-on: '[ "Windows", "avx512" ]'
       artifact-in: build-windows-namespace-nover
       artifact-out: test-windows-namespace-nover-avx512
       artifact-path: test.log
@@ -1503,7 +1504,7 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "avx2", "NAS" ]'
+      runs-on: '[ "Windows", "avx2" ]'
       artifact-in: build-windows-debug
       artifact-out: test-windows-debug-avx2
       artifact-path: test.log
@@ -1516,7 +1517,7 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "avx2", "NAS" ]'
+      runs-on: '[ "Windows", "avx2" ]'
       artifact-in: build-windows-namespace
       artifact-out: test-windows-namespace-avx2
       artifact-path: test.log
@@ -1529,25 +1530,25 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "avx2", "NAS" ]'
+      runs-on: '[ "Windows", "avx2" ]'
       artifact-in: build-windows-namespace-static
       artifact-out: test-windows-namespace-static-avx2
       artifact-path: test.log
       artifact-on-failure: true
       cmd: python scripts/test.py --device cpu --log test.log
 
-  test-windows-syclos-avx2:
-    needs: build-windows-syclos
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
-    with:
-      project: oidn
-      runs-on: '[ "Windows", "avx2", "NAS" ]'
-      artifact-in: build-windows-syclos
-      artifact-out: test-windows-syclos-avx2
-      artifact-path: test.log
-      artifact-on-failure: true
-      cmd: python scripts/test.py --device cpu --log test.log
+  # test-windows-oldsyclos-avx2:
+  #   needs: build-windows-oldsyclos
+  #   secrets: inherit
+  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
+  #   with:
+  #     project: oidn
+  #     runs-on: '[ "Windows", "avx2" ]'
+  #     artifact-in: build-windows-oldsyclos
+  #     artifact-out: test-windows-oldsyclos-avx2
+  #     artifact-path: test.log
+  #     artifact-on-failure: true
+  #     cmd: python scripts/test.py --device cpu --log test.log
 
   test-windows-icx-avx2:
     needs: build-windows-icx
@@ -1555,7 +1556,8 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "avx2", "NAS" ]'
+      runs-on: '[ "Windows", "avx2" ]'
+      dpcpp-version: intel/2025.3
       artifact-in: build-windows-icx
       artifact-out: test-windows-icx-avx2
       artifact-path: test.log
@@ -1568,7 +1570,7 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "avx512", "NAS" ]'
+      runs-on: '[ "Windows", "avx512" ]'
       artifact-in: build-windows-msvc17
       artifact-out: test-windows-msvc17-avx512
       artifact-path: test.log
@@ -1582,7 +1584,7 @@ jobs:
   #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
   #   with:
   #     project: oidn
-  #     runs-on: '[ "Windows", "avx2", "NAS" ]'
+  #     runs-on: '[ "Windows", "avx2" ]'
   #     artifact-in: build-windows-msvc17-asan
   #     artifact-out: test-windows-msvc17-asan-avx2
   #     artifact-path: test.log
@@ -1591,18 +1593,31 @@ jobs:
   #       $Env:TBB_ENABLE_SANITIZERS=1
   #       python scripts/test.py --device cpu --minimal --log test.log
 
-  # test-windows-arm-msvc17:
-  #   needs: build-windows-arm-msvc17
-  #   secrets: inherit
-  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
-  #   with:
-  #     project: oidn
-  #     runs-on: '[ "Windows", "arm", "NAS" ]'
-  #     artifact-in: build-windows-arm-msvc17
-  #     artifact-out: test-windows-arm-msvc17
-  #     artifact-path: test.log
-  #     artifact-on-failure: true
-  #     cmd: python scripts/test.py --device cpu --minimal --log test.log
+  test-windows-arm-msvc17:
+    needs: build-windows-arm-msvc17
+    secrets: inherit
+    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
+    with:
+      project: oidn
+      runs-on: '[ "Windows", "ARM64" ]'
+      artifact-in: build-windows-arm-msvc17
+      artifact-out: test-windows-arm-msvc17
+      artifact-path: test.log
+      artifact-on-failure: true
+      cmd: python scripts/test.py --device cpu --minimal --log test.log
+
+  test-windows-arm-msvc17-debug:
+    needs: build-windows-arm-msvc17-debug
+    secrets: inherit
+    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
+    with:
+      project: oidn
+      runs-on: '[ "Windows", "ARM64" ]'
+      artifact-in: build-windows-arm-msvc17-debug
+      artifact-out: test-windows-arm-msvc17-debug
+      artifact-path: test.log
+      artifact-on-failure: true
+      cmd: python scripts/test.py --device cpu --minimal --log test.log
 
   test-windows-adl:
     needs: build-windows
@@ -1624,7 +1639,7 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "dg2", "NAS" ]'
+      runs-on: '[ "Windows", "dg2" ]'
       env-from-files: ./.github/workflows/gfx-windows-public.env
       artifact-in: build-windows
       artifact-out: test-windows-dg2
@@ -1638,10 +1653,24 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "bmg", "NAS" ]'
+      runs-on: '[ "Windows", "bmg" ]'
       env-from-files: ./.github/workflows/gfx-windows-public.env
       artifact-in: build-windows
       artifact-out: test-windows-bmg
+      artifact-path: test.log
+      artifact-on-failure: true
+      cmd: python scripts/test.py --device sycl --log test.log
+
+  test-windows-lnl:
+    needs: build-windows
+    secrets: inherit
+    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
+    with:
+      project: oidn
+      runs-on: '[ "Windows", "lnl" ]'
+      env-from-files: ./.github/workflows/gfx-windows-public.env
+      artifact-in: build-windows
+      artifact-out: test-windows-lnl
       artifact-path: test.log
       artifact-on-failure: true
       cmd: python scripts/test.py --device sycl --log test.log
@@ -1691,7 +1720,7 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "dg2", "NAS" ]'
+      runs-on: '[ "Windows", "dg2" ]'
       env-from-files: ./.github/workflows/gfx-windows-public.env
       artifact-in: build-windows-namespace-static
       artifact-out: test-windows-namespace-static-dg2
@@ -1725,19 +1754,19 @@ jobs:
       artifact-on-failure: true
       cmd: python scripts/test.py --device hip --log test.log
 
-  test-windows-syclos-dg2:
-    needs: build-windows-syclos
-    secrets: inherit
-    uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
-    with:
-      project: oidn
-      runs-on: '[ "Windows", "dg2", "NAS" ]'
-      env-from-files: ./.github/workflows/gfx-windows-public.env
-      artifact-in: build-windows-syclos
-      artifact-out: test-windows-syclos-dg2
-      artifact-path: test.log
-      artifact-on-failure: true
-      cmd: python scripts/test.py --device sycl --log test.log
+  # test-windows-oldsyclos-dg2:
+  #   needs: build-windows-oldsyclos
+  #   secrets: inherit
+  #   uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
+  #   with:
+  #     project: oidn
+  #     runs-on: '[ "Windows", "dg2" ]'
+  #     env-from-files: ./.github/workflows/gfx-windows-public.env
+  #     artifact-in: build-windows-oldsyclos
+  #     artifact-out: test-windows-oldsyclos-dg2
+  #     artifact-path: test.log
+  #     artifact-on-failure: true
+  #     cmd: python scripts/test.py --device sycl --log test.log
 
   test-windows-icx-dg2:
     needs: build-windows-icx
@@ -1745,8 +1774,9 @@ jobs:
     uses: intel-innersource/libraries.devops.renderkit.workflows/.github/workflows/windows.yml@main
     with:
       project: oidn
-      runs-on: '[ "Windows", "dg2", "NAS" ]'
+      runs-on: '[ "Windows", "dg2" ]'
       env-from-files: ./.github/workflows/gfx-windows-public.env
+      dpcpp-version: intel/2025.3
       artifact-in: build-windows-icx
       artifact-out: test-windows-icx-dg2
       artifact-path: test.log
