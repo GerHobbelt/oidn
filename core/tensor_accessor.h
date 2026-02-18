@@ -10,8 +10,10 @@
 namespace ispc
 {
   struct TensorAccessor1D;
-  struct TensorAccessor3D;
-  struct TensorAccessor4D;
+  struct TensorAccessor3D_chw;
+  struct TensorAccessor3D_ChwBc;
+  struct TensorAccessor4D_IOhwBiBo;
+  struct TensorAccessor4D_OIhwPoQiRoSi;
 };
 
 OIDN_NAMESPACE_BEGIN

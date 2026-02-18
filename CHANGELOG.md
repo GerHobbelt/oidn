@@ -1,6 +1,18 @@
 Version History
 ---------------
 
+### Changes in v2.4.0:
+
+-   Added Intel AMX-FP16 support, dramatically improving performance on Intel
+    Granite Rapids CPUs
+-   Added Intel BMG-G31, Wildcat Lake, Nova Lake, and Crescent Island GPU support
+-   Added AMD RDNA 3.5 GPU support, extended RDNA 2 support
+-   Fixed integer overflow and out-of-bounds write issues in image loaders (only
+    affects the `oidnDenoise` example application)
+-   Added support for compilation with CUDA 13
+-   Added support for compilation with ROCm 7
+-   Removed support for NVIDIA Volta GPUs
+
 ### Changes in v2.3.3:
 
 -   Added NVIDIA Blackwell GPU support

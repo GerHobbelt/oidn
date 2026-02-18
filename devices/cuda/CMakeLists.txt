@@ -41,7 +41,6 @@ set(OIDN_CUDA_SOURCES
   cuda_external_buffer.cpp
   cuda_module.cpp
   cutlass_conv.h
-  cutlass_conv_sm70.cu
   cutlass_conv_sm75.cu
   cutlass_conv_sm80.cu
 )
@@ -56,18 +55,12 @@ function(oidn_set_cuda_sm_flags output_var)
   set(${output_var} "${${output_var}}" PARENT_SCOPE)
 endfunction()
 
-oidn_set_cuda_sm_flags(OIDN_CUDA_SM_FLAGS 70 75 80 90 100 120)
+oidn_set_cuda_sm_flags(OIDN_CUDA_SM_FLAGS 75 80 90 100 120)
 set_source_files_properties(
   cuda_conv.cu
   cuda_device.cu
   cuda_engine.cu
   PROPERTIES COMPILE_FLAGS ${OIDN_CUDA_SM_FLAGS}
-)
-
-oidn_set_cuda_sm_flags(OIDN_CUDA_SM70_FLAGS 70)
-set_source_files_properties(
-  cutlass_conv_sm70.cu
-  PROPERTIES COMPILE_FLAGS ${OIDN_CUDA_SM70_FLAGS}
 )
 
 oidn_set_cuda_sm_flags(OIDN_CUDA_SM75_FLAGS 75)
@@ -82,7 +75,11 @@ set_source_files_properties(
   PROPERTIES COMPILE_FLAGS ${OIDN_CUDA_SM80_FLAGS}
 )
 
-add_library(OpenImageDenoise_device_cuda SHARED ${OIDN_CUDA_SOURCES} ${OIDN_GPU_SOURCES} ${OIDN_RESOURCE_FILE})
+add_library(OpenImageDenoise_device_cuda SHARED
+  ${OIDN_CUDA_SOURCES}
+  ${OIDN_GPU_SOURCES}
+  ${OIDN_RESOURCE_FILE}
+)
 
 set_target_properties(OpenImageDenoise_device_cuda PROPERTIES
   OUTPUT_NAME ${OIDN_LIBRARY_NAME}_device_cuda
@@ -120,12 +117,22 @@ set_target_properties(OpenImageDenoise_device_cuda PROPERTIES
   CUDA_RUNTIME_LIBRARY ${OIDN_CUDA_RUNTIME_LIBRARY}
 )
 
-# Fix warning: support for offline compilation for architectures prior to SM75 will be removed
-# in a future release
-target_compile_options(OpenImageDenoise_device_cuda PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Wno-deprecated-gpu-targets>)
+# Fix warning: support for offline compilation for architectures prior to ... will be removed
+target_compile_options(OpenImageDenoise_device_cuda PRIVATE
+  $<$<COMPILE_LANGUAGE:CUDA>:-Wno-deprecated-gpu-targets>
+)
 # Fix warning: calling a constexpr __host__ function from a __host__ __device__ function is
 # not allowed (CUTLASS)
-target_compile_options(OpenImageDenoise_device_cuda PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
+target_compile_options(OpenImageDenoise_device_cuda PRIVATE
+  $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>
+)
+if(MSVC)
+  # Fix warning: MSVC/cl.exe with traditional preprocessor is used. This may lead to unexpected
+  # compilation errors.
+  target_compile_definitions(OpenImageDenoise_device_cuda PRIVATE
+    CCCL_IGNORE_MSVC_TRADITIONAL_PREPROCESSOR_WARNING
+  )
+endif()
 
 target_link_libraries(OpenImageDenoise_device_cuda PRIVATE OpenImageDenoise_core)
 oidn_strip_symbols(OpenImageDenoise_device_cuda)

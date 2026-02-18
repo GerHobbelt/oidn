@@ -48,14 +48,13 @@ vendors:
     Intel® Data Center GPU Max Series, Intel® Iris® Xe Graphics, Intel® Core™
     Ultra Processors with Intel® Arc™ Graphics, 11th-14th Gen Intel® Core™
     processor graphics, and related Intel Pentium® and Celeron® processors
-    (Xe-LP, Xe-LPG, Xe-LPG+, Xe-HPG, Xe-HPC, Xe2-LPG, Xe2-HPG, and Xe3-LPG
-    microarchitectures)
+    (Xe-LP, Xe-LPG, Xe-LPG+, Xe-HPG, Xe-HPC, Xe2-LPG, Xe2-HPG, Xe3-LPG, and
+    Xe3p-XPC microarchitectures)
 
--   NVIDIA GPUs with Volta, Turing, Ampere, Ada Lovelace, Hopper, and
-    Blackwell architectures
-
--   AMD GPUs with RDNA2 (Navi 21 only), RDNA3 (Navi 3x), and RDNA4 (Navi 4x)
+-   NVIDIA GPUs with Turing, Ampere, Ada Lovelace, Hopper, and Blackwell
     architectures
+
+-   AMD GPUs with RDNA 2, RDNA 3, RDNA 3.5, and RDNA 4 architectures
 
 -   Apple silicon GPUs (M1 and newer)
 
@@ -65,8 +64,9 @@ rendering, but, depending on the hardware used, also for interactive or even
 real-time ray tracing.
 
 Intel Open Image Denoise exploits modern instruction sets like SSE4, AVX2,
-AVX-512, and NEON on CPUs, Intel® Xe Matrix Extensions (Intel® XMX) on Intel
-GPUs, and tensor cores on NVIDIA GPUs to achieve high denoising performance.
+AVX-512, Intel® Advanced Matrix Extensions (Intel® AMX), and NEON on CPUs,
+Intel® Xe Matrix Extensions (Intel® XMX) on Intel GPUs, and tensor cores on
+NVIDIA GPUs to achieve high denoising performance.
 
 
 System Requirements

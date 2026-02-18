@@ -35,13 +35,13 @@ prerequisites are needed:
 
 #### CPU device: {-}
 
--   [Intel® SPMD Program Compiler (ISPC)](http://ispc.github.io) 1.21.0 or
+-   [Intel® SPMD Program Compiler (ISPC)](http://ispc.github.io) 1.29.1 or
     newer. Please obtain a release of ISPC from the
     [ISPC downloads page](https://ispc.github.io/downloads.html). The build
     system looks for ISPC in the `PATH` and in the directory right "next to" the
     checked-out Intel Open Image Denoise sources. For example, if Intel Open
     Image Denoise is in `~/Projects/oidn`, ISPC will also be searched in
-    `~/Projects/ispc-v1.21.0-linux`. Alternatively set the CMake variable
+    `~/Projects/ispc-v1.29.0-linux`. Alternatively set the CMake variable
     `ISPC_EXECUTABLE` to the location of the ISPC compiler.
 
 -   [Intel® Threading Building Blocks](https://github.com/oneapi-src/oneTBB)
@@ -281,8 +281,8 @@ The following list describes the options that can be configured in CMake:
 
 - `OIDN_APPS`: Enable building example and test applications (ON by default).
 
-- `OIDN_APPS_OPENIMAGEIO`: Enable [OpenImageIO](http://openimageio.org/)
-  support in the example and test applications to be able to load/save
+- `OIDN_APPS_OPENIMAGEIO`: Enable [OpenImageIO](http://openimageio.org/) 2.1 or
+  later support in the example and test applications to be able to load/save
   OpenEXR, PNG, and other image file formats (OFF by default).
 
 - `OIDN_INSTALL_DEPENDENCIES`: Enable installing the dependencies (e.g. TBB,

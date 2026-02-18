@@ -23,7 +23,8 @@ OIDN_NAMESPACE_BEGIN
     int getNumThreads() const { return device->numThreads; }
 
     // Ops
-  #if !defined(OIDN_DNNL) && !defined(OIDN_BNNS)
+    bool isConvSupported(PostOp postOp) override;
+  #if !defined(OIDN_BNNS)
     Ref<Conv> newConv(const ConvDesc& desc) override;
   #endif
     Ref<Pool> newPool(const PoolDesc& desc) override;

@@ -240,7 +240,7 @@ OIDN_NAMESPACE_BEGIN
   // Data types sorted by precision in ascending order
   enum class DataType
   {
-    Void,
+    Undefined,
     UInt8,
     Float16,
     Float32,
@@ -264,6 +264,8 @@ OIDN_NAMESPACE_BEGIN
 
   void* alignedMalloc(size_t size, size_t alignment = memoryAlignment);
   void alignedFree(void* ptr);
+
+  static_assert(sizeof(size_t) == 8, "size_t is not 64-bit!");
 
   // -----------------------------------------------------------------------------------------------
   // String functions
