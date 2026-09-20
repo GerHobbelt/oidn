@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "sycl_engine.h"
-#include "sycl_conv.h"
+#include "sycl_ops.h"
 #include "sycl_external_buffer.h"
 #include "../gpu/gpu_autoexposure.h"
-#include "../gpu/gpu_input_process.h"
-#include "../gpu/gpu_output_process.h"
 #include "../gpu/gpu_image_copy.h"
 
 OIDN_NAMESPACE_BEGIN
@@ -36,13 +34,13 @@ OIDN_NAMESPACE_BEGIN
     return makeRef<SYCLExternalBuffer>(this, handleType, handle, name, byteSize);
   }
 
-  bool SYCLEngine::isConvSupported(Fusion fusion)
+  bool SYCLEngine::isConvSupported(Fusion fusion) const
   {
     return fusion == Fusion::None ||
            fusion == Fusion::PoolDst;
   }
 
-  bool SYCLEngine::isConcatConvSupported(Fusion fusion)
+  bool SYCLEngine::isConcatConvSupported(Fusion fusion) const
   {
     return fusion == Fusion::UpsampleSrc0;
   }
@@ -78,7 +76,7 @@ OIDN_NAMESPACE_BEGIN
     #if defined(__linux__)
       return xehpc::newSYCLConcatConv(this, desc);
     #else
-      throw std::logic_error("operation is not implemented");
+      throw std::logic_error("concat+conv operation is not implemented");
     #endif
     case SYCLArchCodepath::Xe2:
       return xe2::newSYCLConcatConv(this, desc);
@@ -87,12 +85,12 @@ OIDN_NAMESPACE_BEGIN
 
   Ref<Pool> SYCLEngine::newPool(const PoolDesc& desc)
   {
-    throw std::logic_error("operation is not implemented");
+    throw std::logic_error("pool operation is not implemented");
   }
 
   Ref<Upsample> SYCLEngine::newUpsample(const UpsampleDesc& desc)
   {
-    throw std::logic_error("operation is not implemented");
+    throw std::logic_error("upsample operation is not implemented");
   }
 
   Ref<Autoexposure> SYCLEngine::newAutoexposure(const ImageDesc& srcDesc)
@@ -107,12 +105,40 @@ OIDN_NAMESPACE_BEGIN
 
   Ref<InputProcess> SYCLEngine::newInputProcess(const InputProcessDesc& desc)
   {
-    return makeRef<GPUInputProcess<SYCLEngine, half, TensorLayout::Chw16c, 16>>(this, desc);
+    switch (device->getArchCodepath())
+    {
+    case SYCLArchCodepath::XeLP:
+      return xelp::newSYCLInputProcess(this, desc);
+    case SYCLArchCodepath::XeHPG:
+      return xehpg::newSYCLInputProcess(this, desc);
+    case SYCLArchCodepath::XeHPC:
+    #if defined(__linux__)
+      return xehpc::newSYCLInputProcess(this, desc);
+    #else
+      throw std::logic_error("operation is not implemented");
+    #endif
+    case SYCLArchCodepath::Xe2:
+      return xe2::newSYCLInputProcess(this, desc);
+    }
   }
 
   Ref<OutputProcess> SYCLEngine::newOutputProcess(const OutputProcessDesc& desc)
   {
-    return makeRef<GPUOutputProcess<SYCLEngine, half, TensorLayout::Chw16c>>(this, desc);
+    switch (device->getArchCodepath())
+    {
+    case SYCLArchCodepath::XeLP:
+      return xelp::newSYCLOutputProcess(this, desc);
+    case SYCLArchCodepath::XeHPG:
+      return xehpg::newSYCLOutputProcess(this, desc);
+    case SYCLArchCodepath::XeHPC:
+    #if defined(__linux__)
+      return xehpc::newSYCLOutputProcess(this, desc);
+    #else
+      throw std::logic_error("operation is not implemented");
+    #endif
+    case SYCLArchCodepath::Xe2:
+      return xe2::newSYCLOutputProcess(this, desc);
+    }
   }
 
   Ref<ImageCopy> SYCLEngine::newImageCopy()
