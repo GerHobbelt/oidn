@@ -1,6 +1,8 @@
 Version History
 ---------------
 
+### Changes in v2.5.1:
+
 -   Fixed integer overflows which could cause out-of-bounds reads or writes
     instead of an error if a very large byte offset was passed to
     `oidnReadBuffer`, `oidnWriteBuffer` or `oidnSetFilterImage`, or a very large
@@ -8,8 +10,21 @@ Version History
     `oidnSetSharedFilterImage`
 -   Fixed `oidnSetSharedFilterImage` accepting a byte offset large enough to
     make the address of the image overflow instead of returning an error
+-   Fixed out-of-bounds reads and crashes caused by insufficient validation of
+    the weights blob set with `oidnSetSharedFilterData`, which could occur if
+    the blob was corrupted or malicious
 -   Fixed `oidnReadBuffer` and `oidnWriteBuffer` failing with an out-of-memory
     error on Metal devices if the specified byte size was 0
+-   Fixed changes to other filter parameters being discarded when setting an
+    empty data parameter with `oidnSetSharedFilterData`, which could cause the
+    filter to be executed with an outdated model, corrupting the output image or
+    crashing
+-   Fixed a signed integer overflow when denoising very large single-channel
+    images, close to the maximum supported number of pixels
+-   Fixed crashes and incorrect output if committing a filter failed due to
+    running out of memory, which could also break the other filters of the
+    device. Executing such a filter now returns an error instead, and the filter
+    can be recovered by committing it again
 
 ### Changes in v2.5.0:
 
