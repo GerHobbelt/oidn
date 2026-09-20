@@ -10,17 +10,27 @@ Version History
     `oidnSetSharedFilterImage`
 -   Fixed `oidnSetSharedFilterImage` accepting a byte offset large enough to
     make the address of the image overflow instead of returning an error
+-   Fixed `oidnSetFilterImage` and `oidnSetSharedFilterImage` truncating the
+    width and height of the image to 32 bits, which could silently denoise a
+    much smaller image instead of returning an error
+-   Fixed a crash if a null array of command queues was passed to
+    `oidnNewMetalDevice`, which now returns an error instead
+-   Fixed leaking the imported memory object on CUDA and HIP devices if
+    `oidnNewSharedBufferFromFD` or `oidnNewSharedBufferFromWin32Handle` failed
+    after the handle had already been imported
+-   Fixed `oidnReadBuffer` and `oidnWriteBuffer` failing with an out-of-memory
+    error on Metal devices if the specified byte size was 0
+-   Fixed a signed integer overflow when denoising very large single-channel
+    images, close to the maximum supported number of pixels
 -   Fixed out-of-bounds reads and crashes caused by insufficient validation of
     the weights blob set with `oidnSetSharedFilterData`, which could occur if
     the blob was corrupted or malicious
--   Fixed `oidnReadBuffer` and `oidnWriteBuffer` failing with an out-of-memory
-    error on Metal devices if the specified byte size was 0
+-   Fixed a crash (division by zero) if the weights blob set with
+    `oidnSetSharedFilterData` contained a tensor with a zero dimension
 -   Fixed changes to other filter parameters being discarded when setting an
     empty data parameter with `oidnSetSharedFilterData`, which could cause the
     filter to be executed with an outdated model, corrupting the output image or
     crashing
--   Fixed a signed integer overflow when denoising very large single-channel
-    images, close to the maximum supported number of pixels
 -   Fixed crashes and incorrect output if committing a filter failed due to
     running out of memory, which could also break the other filters of the
     device. Executing such a filter now returns an error instead, and the filter
