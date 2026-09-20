@@ -1,6 +1,6 @@
 # Intel® Open Image Denoise
 
-This is release v2.4.1 of Intel Open Image Denoise. For changes and new
+This is release v2.5.0 of Intel Open Image Denoise. For changes and new
 features see the [changelog](CHANGELOG.md). Visit
 https://www.openimagedenoise.org for more information.
 
@@ -111,7 +111,7 @@ drivers](https://www.nvidia.com/en-us/geforce/drivers/):
 For AMD GPU support, please also install the latest [AMD graphics
 drivers](https://www.amd.com/en/support):
 
-  - Windows: AMD Software: Adrenalin Edition 25.3.1 or newer
+  - Windows: AMD Software: Adrenalin Edition 25.30.02.01 or newer
 
   - Linux: [Radeon Software for
     Linux](https://www.amd.com/en/support/download/linux-drivers.html)
@@ -203,17 +203,19 @@ additional prerequisites are needed:
   - oneAPI DPC++ Compiler, one of the following versions (other versions
     might work as well but have *not* been validated with Intel Open
     Image Denoise):
-
+    
       - [oneAPI DPC++
-        Compiler 6.2.1](https://github.com/intel/llvm/releases/tag/v6.2.1).
-        This is the open source version of the compiler.
+        Compiler 6.1.0](https://github.com/intel/llvm/releases/tag/v6.1.0).
+        This is the open source version of the compiler. Versions 6.2.x
+        and 6.3.0 may cause crashes or device detection failures on
+        Windows so it is highly recommended to avoid these.
       - [Intel® oneAPI DPC++/C++
         Compiler](https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html)
         2025.3 or newer
 
   - *Optional*: Intel® Graphics Offline Compiler for OpenCL™ Code
     (OCLOC), if building with `OIDN_DEVICE_SYCL_AOT` enabled
-
+    
       - Windows: Version [2025.3.3
         / 32.0.101.8331](https://registrationcenter-download.intel.com/akdlm/IRC_NAS/cb17f6e4-6e61-47c7-bb27-1008b23f1c7b/intel-ocloc-2025.3.3.4_offline.exe)
         or newer as a [standalone component of Intel® oneAPI
@@ -221,7 +223,7 @@ additional prerequisites are needed:
         which must be extracted and its contents added to the `PATH`.
         Also included with [Intel® oneAPI Base
         Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html#base-kit).
-
+    
       - Linux: Included with [Intel® software for General Purpose GPU
         capabilities](https://dgpu-docs.intel.com) release
         [LTS 2523.x](https://dgpu-docs.intel.com/releases/LTS-release-notes.html#release-2025-12-11)
@@ -283,25 +285,25 @@ This script will put the `icx` and `icpx` compiler executables from the
 Intel(R) oneAPI DPC++/C++ Compiler in your `PATH`.
 
   - Create a build directory, and go into it using a command prompt
-
+    
         mkdir oidn/build
         cd oidn/build
-
+    
     (We do recommend having separate build directories for different
     configurations such as release, debug, etc.).
 
   - CMake will use the default compiler, which on most Linux machines is
     `gcc`, but it can be switched to `clang` by executing the following:
-
+    
         cmake -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
-
+    
     If you are building with SYCL support, you must set the DPC++
     compiler (`clang`/`clang++` or `icx`/`icpx`) as the C/C++ compiler
     here. Note that the compiler variables cannot be changed after the
     first `cmake` or `ccmake` run.
 
   - Open the CMake configuration dialog
-
+    
         ccmake ..
 
   - Make sure to properly set the build mode and enable the components
@@ -309,7 +311,7 @@ Intel(R) oneAPI DPC++/C++ Compiler in your `PATH`.
     and other device support must be enabled manually (e.g. with the
     `OIDN_DEVICE_SYCL` option). Then type ’c’onfigure and ’g’enerate.
     When back on the command prompt, build the library using
-
+    
         ninja
 
 ## Compiling on Windows
@@ -337,26 +339,26 @@ because not all devices can be built using the Visual Studio generator
 
   - Create a build directory, and go into it using a Visual Studio
     command prompt
-
+    
         mkdir oidn/build
         cd oidn/build
-
+    
     (We do recommend having separate build directories for different
     configurations such as release, debug, etc.).
 
   - CMake will use the default compiler, which on most Windows machines
     is MSVC, but it can be switched to `clang` by executing the
     following:
-
+    
         cmake -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
-
+    
     If you are building with SYCL support, you must set the DPC++
     compiler (`clang`/`clang++` or `icx`) as the C/C++ compiler here.
     Note that the compiler variables cannot be changed after the first
     `cmake` or `cmake-gui` run.
 
   - Open the CMake GUI (`cmake-gui.exe`)
-
+    
         cmake-gui ..
 
   - Make sure to properly set the build mode and enable the components
@@ -364,7 +366,7 @@ because not all devices can be built using the Visual Studio generator
     and other device support must be enabled manually
     (e.g. `OIDN_DEVICE_SYCL` option). Then click on Configure and
     Generate. When back on the command prompt, build the library using
-
+    
         ninja
 
 ## CMake Configuration
@@ -546,7 +548,7 @@ oidn::BufferRef colorBuf  = device.newBuffer(width * height * 3 * sizeof(float))
 oidn::BufferRef albedoBuf = ...
 
 // Create a filter for denoising a beauty (color) image using optional auxiliary images too
-// This can be an expensive operation, so try no to create a new filter for every image!
+// This can be an expensive operation, so try not to create a new filter for every image!
 oidn::FilterRef filter = device.newFilter("RT"); // generic ray tracing filter
 filter.setImage("color",  colorBuf,  oidn::Format::Float3, width, height); // beauty
 filter.setImage("albedo", albedoBuf, oidn::Format::Float3, width, height); // auxiliary
@@ -642,7 +644,7 @@ overhead of copying as much as possible:
     buffers should be directly passed to filters as image parameters
     instead of the original pointers using `oidnSetFilterImage`.
 
-  - Data should be copied asynchronously using using the new
+  - Data should be copied asynchronously using the new
     `oidnReadBufferAsync` and `oidnWriteBufferAsync` functions, which
     may achieve higher performance than plain `memcpy`.
 
@@ -672,14 +674,14 @@ compute API (e.g. `sycl::malloc_device`, `cudaMalloc`) instead of using
 buffers. This way, it is the responsibility of the user to correctly
 allocate the memory for the device.
 
-In such cases, it often necessary to have more control over the device
-creation as well, to ensure that filtering is running on the intended
-device and command queues or streams from the application can be shared
-to improve performance. If the application is using the same compute or
-graphics API as the Open Image Denoise device, this can be achieved by
-creating devices with `oidnNewSYCLDevice`, `oidnNewCUDADevice`, etc. For
-some APIs there are additional interoperability functions as well,
-e.g. `oidnExecuteSYCLFilterAsync`.
+In such cases, it is often necessary to have more control over the
+device creation as well, to ensure that filtering is running on the
+intended device and command queues or streams from the application can
+be shared to improve performance. If the application is using the same
+compute or graphics API as the Open Image Denoise device, this can be
+achieved by creating devices with `oidnNewSYCLDevice`,
+`oidnNewCUDADevice`, etc. For some APIs there are additional
+interoperability functions as well, e.g. `oidnExecuteSYCLFilterAsync`.
 
 If the application is using a graphics API which does not support
 unified memory allocations, e.g. DX12 or Vulkan, it may be still
@@ -705,10 +707,21 @@ possible avoid copying texture data by using a linear texture layout
 backs this data. In this case, you should ensure that the row stride of
 the linear texture data is correctly set.
 
-Importing external synchronization primitives (e.g. semaphores) from
-graphics APIs is not yet supported either but it is planned for a future
-release. Meanwhile, synchronizing access to shared memory should be done
-on the host using `oidnSyncDevice` and the used graphics API.
+For efficiently synchronizing access to shared memory, external
+semaphores should be also imported from the graphics API using the
+`oidnNewSharedSemaphoreFromFD` and
+`oidnNewSharedSemaphoreFromWin32Handle` functions. The external memory
+types supported by Open Image Denoise can be queried using the
+`externalSemaphoreTypes` device parameter. Signaling and waiting on
+semaphores are executed asynchronously with the
+`oidnSignalSemaphoresAsync` and `oidnWaitSemaphoresAsync` functions.
+
+If importing external semaphores is not possible, synchronizing access
+to shared memory should be done on the host using `oidnSyncDevice` and
+the graphics API but this typically introduces a performance overhead.
+Since external semaphore support is not guaranteed on all device types,
+driver versions and OSs, it is strongly recommended to implement
+host-blocking synchronization as well in the application, as a fallback.
 
 When importing external memory, the application also needs to make sure
 that the Open Image Denoise device is running on the same *physical*
@@ -727,8 +740,8 @@ Open Image Denoise 2 introduces a simple *physical device* API, which
 enables the application to query the list of supported physical devices
 in the system, including their name, type, UUID, LUID, PCI address, etc.
 (see `oidnGetNumPhysicalDevices`, `oidnGetPhysicalDeviceString`, etc.).
-New logical device (i.e. `OIDNDevice`) creation functions for have been
-also introduced, which enable creating a logical device on a specific
+New logical device (i.e. `OIDNDevice`) creation functions have also been
+introduced, which enable creating a logical device on a specific
 physical device: `oidnNewDeviceByID`, `oidnNewDeviceByUUID`, etc.
 
 Creating a logical device on a physical device having a particular UUID,
@@ -782,11 +795,11 @@ multi-vendor GPU support. If the library is built with GPU support as
 well, the `OIDN_STATIC_LIB` option is still available but enabling it
 results in a hybrid static/shared library.
 
-If the main reason for building as a static library would be is the
-ability to use multiple versions of Open Image Denoise in the same
-process, please use the existing `OIDN_API_NAMESPACE` CMake option
-instead. With this feature all symbols of the library will be put into a
-custom namespace, which can prevent symbol clashes.
+If the main reason for building as a static library is the ability to
+use multiple versions of Open Image Denoise in the same process, please
+use the existing `OIDN_API_NAMESPACE` CMake option instead. With this
+feature all symbols of the library will be put into a custom namespace,
+which can prevent symbol clashes.
 
 ## Physical Devices
 
@@ -940,12 +953,12 @@ For Metal, a single command queue is supported.
 Once a device is created, you can call
 
 ``` cpp
-bool oidnGetDeviceBool(OIDNDevice device, const char* name);
-void oidnSetDeviceBool(OIDNDevice device, const char* name, bool value);
-int  oidnGetDeviceInt (OIDNDevice device, const char* name);
-void oidnSetDeviceInt (OIDNDevice device, const char* name, int  value);
-int  oidnGetDeviceUInt(OIDNDevice device, const char* name);
-void oidnSetDeviceUInt(OIDNDevice device, const char* name, unsigned int value);
+bool         oidnGetDeviceBool(OIDNDevice device, const char* name);
+void         oidnSetDeviceBool(OIDNDevice device, const char* name, bool value);
+int          oidnGetDeviceInt (OIDNDevice device, const char* name);
+void         oidnSetDeviceInt (OIDNDevice device, const char* name, int  value);
+unsigned int oidnGetDeviceUInt(OIDNDevice device, const char* name);
+void         oidnSetDeviceUInt(OIDNDevice device, const char* name, unsigned int value);
 ```
 
 to set and get parameter values on the device. Note that some parameters
@@ -961,7 +974,8 @@ for the parameters supported by devices.
 | `Int`  | `versionPatch`           | *constant* | patch version number                                                                                                                      |
 | `Bool` | `systemMemorySupported`  | *constant* | device can directly access memory allocated with the system allocator (e.g. `malloc`)                                                     |
 | `Bool` | `managedMemorySupported` | *constant* | device supports buffers created with managed storage (`OIDN_STORAGE_MANAGED`)                                                             |
-| `Int`  | `externalMemoryTypes`    | *constant* | bitfield of `OIDNExternalMemoryTypeFlag` values representing the external memory types supported by the device                            |
+| `UInt` | `externalMemoryTypes`    | *constant* | bitfield of `OIDNExternalMemoryTypeFlag` values representing the external memory types supported by the device                            |
+| `UInt` | `externalSemaphoreTypes` | *constant* | bitfield of `OIDNExternalSemaphoreTypeFlag` values representing the external semaphore types supported by the device                      |
 | `Int`  | `verbose`                |          0 | verbosity level of the console output between 0–4; when set to 0, no output is printed, when set to a higher level more output is printed |
 
 Parameters supported by all devices.
@@ -1185,17 +1199,17 @@ Win32 handles using
 
 ``` cpp
 OIDNBuffer oidnNewSharedBufferFromFD(OIDNDevice device,
-                                     OIDNExternalMemoryTypeFlag fdType,
+                                     OIDNExternalMemoryTypeFlags fdType,
                                      int fd, size_t byteSize);
 
 OIDNBuffer oidnNewSharedBufferFromWin32Handle(OIDNDevice device,
-                                              OIDNExternalMemoryTypeFlag handleType,
+                                              OIDNExternalMemoryTypeFlags handleType,
                                               void* handle, const void* name, size_t byteSize);
 ```
 
 Before exporting memory from the graphics API, the application should
 find a handle type which is supported by both the Open Image Denoise
-device (see `externalMemoryTypes` device parameter) and the graphics
+device (see the `externalMemoryTypes` device parameter) and the graphics
 API. Note that different GPU vendors may support different handle types.
 To ensure compatibility with all device types, applications should
 support at least `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32` on
@@ -1203,22 +1217,31 @@ Windows and both `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_FD` and
 `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_DMA_BUF` on Linux. All possible external
 memory types are listed in the table below.
 
-| Name                                                | Description                                                                                                        |
-| :-------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------- |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_NONE`               |                                                                                                                    |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_FD`          | opaque POSIX file descriptor handle (recommended on Linux)                                                         |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_DMA_BUF`            | file descriptor handle for a Linux dma\_buf (recommended on Linux)                                                 |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32`       | NT handle (recommended on Windows)                                                                                 |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32_KMT`   | global share (KMT) handle                                                                                          |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D11_TEXTURE`      | NT handle returned by `IDXGIResource1::CreateSharedHandle` referring to a Direct3D 11 texture resource             |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D11_TEXTURE_KMT`  | global share (KMT) handle returned by `IDXGIResource::GetSharedHandle` referring to a Direct3D 11 texture resource |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D11_RESOURCE`     | NT handle returned by `IDXGIResource1::CreateSharedHandle` referring to a Direct3D 11 resource                     |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D11_RESOURCE_KMT` | global share (KMT) handle returned by `IDXGIResource::GetSharedHandle` referring to a Direct3D 11 resource         |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D12_HEAP`         | NT handle returned by `ID3D12Device::CreateSharedHandle` referring to a Direct3D 12 heap resource                  |
-| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D12_RESOURCE`     | NT handle returned by `ID3D12Device::CreateSharedHandle` referring to a Direct3D 12 committed resource             |
+| Name                                                | Description                                                                                                                                   |
+| :-------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_NONE`               |                                                                                                                                               |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_FD`          | opaque POSIX file descriptor handle (recommended on Linux)                                                                                    |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_DMA_BUF`            | file descriptor handle for a Linux dma\_buf (recommended on Linux)                                                                            |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32`       | NT handle (recommended on Windows)                                                                                                            |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32_KMT`   | global share (KMT) handle                                                                                                                     |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D11_TEXTURE`      | NT handle returned by `IDXGIResource1::CreateSharedHandle` referring to a Direct3D 11 texture resource                                        |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D11_TEXTURE_KMT`  | global share (KMT) handle returned by `IDXGIResource::GetSharedHandle` referring to a Direct3D 11 texture resource                            |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D11_RESOURCE`     | NT handle returned by `IDXGIResource1::CreateSharedHandle` referring to a Direct3D 11 resource                                                |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D11_RESOURCE_KMT` | global share (KMT) handle returned by `IDXGIResource::GetSharedHandle` referring to a Direct3D 11 resource                                    |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D12_HEAP`         | NT handle returned by `ID3D12Device::CreateSharedHandle` referring to a Direct3D 12 heap resource                                             |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_D3D12_RESOURCE`     | NT handle returned by `ID3D12Device::CreateSharedHandle` referring to a Direct3D 12 committed resource                                        |
+| `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_DEDICATED`          | modifier flag indicating that the external memory has dedicated allocation (used only in combination with one of the handle type flags above) |
 
 Supported external memory type flags, i.e., valid constants of type
 `OIDNExternalMemoryTypeFlag`.
+
+Please note that if the external memory uses dedicated allocation, the
+`OIDN_EXTERNAL_MEMORY_TYPE_FLAG_DEDICATED` flag must be combined with
+the handle type flag (e.g., `OIDN_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32
+| OIDN_EXTERNAL_MEMORY_TYPE_FLAG_DEDICATED` as `handleType`). To
+maximize compatibility, we recommend to always use dedicated allocations
+if possible because some backends support only dedicated allocations for
+certain external memory types.
 
 Metal buffers can be imported directly with
 
@@ -1304,6 +1327,78 @@ pointers. This can be done using the `OIDNFormat` enumeration type:
 
 Supported data formats, i.e., valid constants of type `OIDNFormat`.
 
+## Semaphores
+
+Access to external buffers imported from graphics APIs needs to be
+explicitly synchronized between Open Image Denoise and graphics
+operations to avoid race conditions. The most efficient way is by using
+external semaphores also imported from the graphics API, which enable
+synchronization on the GPU device instead of the host (but this depends
+on the implementation).
+
+External semaphores can be imported similarly to buffers:
+
+``` cpp
+OIDNSemaphore oidnNewSharedSemaphoreFromFD(OIDNDevice device,
+                                           OIDNExternalSemaphoreTypeFlags fdType,
+                                           int fd);
+
+OIDNSemaphore oidnNewSharedSemaphoreFromWin32Handle(OIDNDevice device,
+                                                    OIDNExternalSemaphoreTypeFlags handleType,
+                                                    void* handle, const void* name);
+```
+
+The semaphore handle types supported by Open Image Denoise can be
+queried using the `externalSemaphoreTypes` device parameter. The
+possible semaphore type flags are listed in the following table.
+
+| Name                                                         | Description                                                            |
+| :----------------------------------------------------------- | :--------------------------------------------------------------------- |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_NONE`                     |                                                                        |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_OPAQUE_FD`                | opaque POSIX file descriptor handle                                    |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_OPAQUE_WIN32`             | opaque NT handle                                                       |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_OPAQUE_WIN32_KMT`         | opaque global share (KMT) handle                                       |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_D3D11_FENCE`              | NT handle referencing a Direct3D 11 fence object                       |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_D3D12_FENCE`              | NT handle referencing a Direct3D 12 fence object                       |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_KEYED_MUTEX`              | NT handle referencing a Direct3D 11 keyed mutex object                 |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_KEYED_MUTEX_KMT`          | global share (KMT) handle referencing a Direct3D 11 keyed mutex object |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_TIMELINE_SEMAPHORE_FD`    | POSIX file descriptor referencing a timeline semaphore                 |
+| `OIDN_EXTERNAL_SEMAPHORE_TYPE_FLAG_TIMELINE_SEMAPHORE_WIN32` | NT handle referencing a timeline semaphore                             |
+
+Supported external semaphore type flags, i.e., valid constants of type
+`OIDNExternalSemaphoreTypeFlag`.
+
+The reference counted semaphore objects can be retained and released
+with
+
+``` cpp
+void oidnRetainSemaphore(OIDNSemaphore semaphore);
+void oidnReleaseSemaphore(OIDNSemaphore semaphore);
+```
+
+One or more semaphores can be signaled or waited on asynchronously by
+calling the following functions:
+
+``` cpp
+void oidnSignalSemaphoresAsync(OIDNDevice device,
+                               const OIDNSemaphore* semaphores,
+                               const uint64_t* values,
+                               int numSemaphores);
+
+void oidnWaitSemaphoresAsync(OIDNDevice device,
+                             const OIDNSemaphore* semaphores,
+                             const uint64_t* values,
+                             const uint32_t* timeoutsMs,
+                             int numSemaphores);
+```
+
+The `values` and `timeoutMs` parameters are needed only for certain
+kinds of semaphores (e.g. fences, keyed mutexes), for other semaphores
+these values are ignored and the pointers may be `NULL`. The meaning of
+the `values` parameter depends on the respective semaphore types
+(e.g. for fences it is the value to set/wait for, for keyed mutexes it
+is the key).
+
 ## Filters
 
 Filters are the main objects in Open Image Denoise that are responsible
@@ -1320,10 +1415,10 @@ filter types are documented later in this section.
 
 Creating filter objects can be very expensive, therefore it is
 *strongly* recommended to reuse the same filter for denoising as many
-images as possible, as long as the these images have the same same size,
-format, and features (i.e., only the memory locations and pixel values
-may be different). Otherwise (e.g. for images with different
-resolutions), reusing the same filter would not have any benefits.
+images as possible, as long as these images have the same size, format,
+and features (i.e., only the memory locations and pixel values may be
+different). Otherwise (e.g. for images with different resolutions),
+reusing the same filter would not have any benefits.
 
 Once created, filter objects can be retained and released with
 
@@ -1960,7 +2055,7 @@ used for inference will be either originally noise-free or prefiltered
 with separately trained auxiliary feature denoising models. If inference
 will be done only with prefiltered features, even higher quality can be
 achieved by training with prefiltered features instead of the reference
-onces. This can be achieved by first training the auxiliary feature
+ones. This can be achieved by first training the auxiliary feature
 models and then specifying the list of these results when preprocessing
 the dataset for the main feature (`--aux_results` or `-a` option).
 
@@ -2048,7 +2143,7 @@ by running the `visualize.py` script, e.g.:
     ./visualize.py --result rt_hdr_alb
 
 Training is performed with mixed precision (FP16 and FP32) by default,
-if it supported by the hardware, which makes training faster and use
+if it is supported by the hardware, which makes training faster and use
 less memory. However, in some rare cases this might cause some
 convergence issues. The training precision can be manually set to FP32
 if necessary (`--precision` or `-p` option).
