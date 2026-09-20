@@ -331,11 +331,14 @@ OIDN_API OIDNBuffer oidnNewBufferWithStorage(OIDNDevice device, size_t byteSize,
 OIDN_API OIDNBuffer oidnNewSharedBuffer(OIDNDevice device, void* devPtr, size_t byteSize);
 
 // Creates a shared buffer by importing external memory from a POSIX file descriptor.
+// On success, ownership of the file descriptor is transferred to the device, so the application
+// must not close it; on failure (returns NULL), the application retains ownership of it.
 OIDN_API OIDNBuffer oidnNewSharedBufferFromFD(OIDNDevice device,
                                               OIDNExternalMemoryTypeFlags fdType,
                                               int fd, size_t byteSize);
 
 // Creates a shared buffer by importing external memory from a Win32 handle.
+// Ownership of the handle is not transferred to the device, so the application must release it.
 OIDN_API OIDNBuffer oidnNewSharedBufferFromWin32Handle(OIDNDevice device,
                                                        OIDNExternalMemoryTypeFlags handleType,
                                                        void* handle, const void* name, size_t byteSize);
@@ -355,18 +358,18 @@ OIDN_API OIDNStorage oidnGetBufferStorage(OIDNBuffer buffer);
 // is empty or getting a pointer to data with device storage is not supported by the device.
 OIDN_API void* oidnGetBufferData(OIDNBuffer buffer);
 
-// Copies data from a region of the buffer to host memory.
+// Copies data from a range of the buffer to host memory.
 OIDN_API void oidnReadBuffer(OIDNBuffer buffer, size_t byteOffset, size_t byteSize, void* dstHostPtr);
 
-// Copies data from a region of the buffer to host memory asynchronously.
+// Copies data from a range of the buffer to host memory asynchronously.
 OIDN_API void oidnReadBufferAsync(OIDNBuffer buffer,
                                   size_t byteOffset, size_t byteSize, void* dstHostPtr);
 
-// Copies data to a region of the buffer from host memory.
+// Copies data to a range of the buffer from host memory.
 OIDN_API void oidnWriteBuffer(OIDNBuffer buffer,
                               size_t byteOffset, size_t byteSize, const void* srcHostPtr);
 
-// Copies data to a region of the buffer from host memory asynchronously.
+// Copies data to a range of the buffer from host memory asynchronously.
 OIDN_API void oidnWriteBufferAsync(OIDNBuffer buffer,
                                    size_t byteOffset, size_t byteSize, const void* srcHostPtr);
 
@@ -419,11 +422,14 @@ typedef OIDNFlags OIDNExternalSemaphoreTypeFlags;
 typedef struct OIDNSemaphoreImpl* OIDNSemaphore;
 
 // Creates a shared semaphore by importing an external semaphore from a POSIX file descriptor.
+// On success, ownership of the file descriptor is transferred to the device, so the application
+// must not close it; on failure (returns NULL), the application retains ownership of it.
 OIDN_API OIDNSemaphore oidnNewSharedSemaphoreFromFD(OIDNDevice device,
                                                     OIDNExternalSemaphoreTypeFlags fdType,
                                                     int fd);
 
 // Creates a shared semaphore by importing an external semaphore from a Win32 handle.
+// Ownership of the handle is not transferred to the device, so the application must release it.
 OIDN_API OIDNSemaphore oidnNewSharedSemaphoreFromWin32Handle(OIDNDevice device,
                                                              OIDNExternalSemaphoreTypeFlags handleType,
                                                              void* handle, const void* name);

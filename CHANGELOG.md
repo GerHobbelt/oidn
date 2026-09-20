@@ -1,6 +1,16 @@
 Version History
 ---------------
 
+-   Fixed integer overflows which could cause out-of-bounds reads or writes
+    instead of an error if a very large byte offset was passed to
+    `oidnReadBuffer`, `oidnWriteBuffer` or `oidnSetFilterImage`, or a very large
+    pixel or row stride was passed to `oidnSetFilterImage` or
+    `oidnSetSharedFilterImage`
+-   Fixed `oidnSetSharedFilterImage` accepting a byte offset large enough to
+    make the address of the image overflow instead of returning an error
+-   Fixed `oidnReadBuffer` and `oidnWriteBuffer` failing with an out-of-memory
+    error on Metal devices if the specified byte size was 0
+
 ### Changes in v2.5.0:
 
 -   Significantly improved performance and reduced memory usage on Intel GPUs
@@ -13,8 +23,6 @@ Version History
     combined with the handle type flag when importing external memory with
     dedicated allocation
 -   Fixed corrupted output on Apple M5 Pro/Max GPUs using Metal
--   Fixed a race condition in the Metal device that could cause a crash when
-    using a progress monitor callback
 -   Fixed a crash caused by over-releasing the MTLDevice, which could occur
     after creating and destroying multiple devices
 -   Fixed device detection failure or crash on Windows if some old Intel

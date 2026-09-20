@@ -288,25 +288,25 @@ OIDN_NAMESPACE_BEGIN
       return oidnGetBufferData(handle);
     }
 
-    // Copies data from a region of the buffer to host memory.
+    // Copies data from a range of the buffer to host memory.
     void read(size_t byteOffset, size_t byteSize, void* dstHostPtr) const
     {
       oidnReadBuffer(handle, byteOffset, byteSize, dstHostPtr);
     }
 
-    // Copies data from a region of the buffer to host memory asynchronously.
+    // Copies data from a range of the buffer to host memory asynchronously.
     void readAsync(size_t byteOffset, size_t byteSize, void* dstHostPtr) const
     {
       oidnReadBufferAsync(handle, byteOffset, byteSize, dstHostPtr);
     }
 
-    // Copies data to a region of the buffer from host memory.
+    // Copies data to a range of the buffer from host memory.
     void write(size_t byteOffset, size_t byteSize, const void* srcHostPtr)
     {
       oidnWriteBuffer(handle, byteOffset, byteSize, srcHostPtr);
     }
 
-    // Copies data to a region of the buffer from host memory asynchronously.
+    // Copies data to a range of the buffer from host memory asynchronously.
     void writeAsync(size_t byteOffset, size_t byteSize, const void* srcHostPtr)
     {
       oidnWriteBufferAsync(handle, byteOffset, byteSize, srcHostPtr);
@@ -877,6 +877,8 @@ OIDN_NAMESPACE_BEGIN
     }
 
     // Creates a shared buffer by importing external memory from a POSIX file descriptor.
+    // On success, ownership of the file descriptor is transferred to the device, so the application
+    // must not close it; on failure the application retains ownership of it.
     BufferRef newBuffer(ExternalMemoryTypeFlags fdType, int fd, size_t byteSize) const
     {
       return oidnNewSharedBufferFromFD(
@@ -884,6 +886,7 @@ OIDN_NAMESPACE_BEGIN
     }
 
     // Creates a shared buffer by importing external memory from a Win32 handle.
+    // Ownership of the handle is not transferred to the device, so the application must release it.
     BufferRef newBuffer(ExternalMemoryTypeFlags handleType, void* handle, const void* name, size_t byteSize) const
     {
       return oidnNewSharedBufferFromWin32Handle(
@@ -899,12 +902,17 @@ OIDN_NAMESPACE_BEGIN
     }
   #endif
 
+    // Creates a shared semaphore by importing an external semaphore from a POSIX file descriptor.
+    // On success, ownership of the file descriptor is transferred to the device, so the application
+    // must not close it; on failure the application retains ownership of it.
     SemaphoreRef newSemaphore(ExternalSemaphoreTypeFlags fdType, int fd) const
     {
       return oidnNewSharedSemaphoreFromFD(
         handle, static_cast<OIDNExternalSemaphoreTypeFlags>(fdType), fd);
     }
 
+    // Creates a shared semaphore by importing an external semaphore from a Win32 handle.
+    // Ownership of the handle is not transferred to the device, so the application must release it.
     SemaphoreRef newSemaphore(ExternalSemaphoreTypeFlags handleType, void* handle, const void* name) const
     {
       return oidnNewSharedSemaphoreFromWin32Handle(
